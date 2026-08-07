@@ -22,7 +22,11 @@ ROTAS_IGNORADAS = ("/admin", "/static")
 def registrar_visita():
     if request.path.startswith(ROTAS_IGNORADAS):
         return
-    ip = request.remote_addr
+    # No Render (e em outras hospedagens), o site fica atrás de um proxy,
+    # então o IP real do visitante vem no cabeçalho X-Forwarded-For.
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+    if ip:
+        ip = ip.split(",")[0].strip()  # pega só o primeiro IP da lista
     user_agent = request.headers.get("User-Agent", "")
     registrar_acesso(ip, user_agent, pagina_visitada=request.path)
 
