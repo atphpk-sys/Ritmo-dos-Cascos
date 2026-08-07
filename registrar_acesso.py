@@ -4,9 +4,11 @@ registrar_acesso.py
 Interpreta o User-Agent de uma visita e insere um registro na tabela
 'acessos'. Pode ser chamado diretamente (teste) ou importado pelo app.py.
 """
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from database import conectar
 from user_agents import parse
+
+FUSO_BRASILIA = timezone(timedelta(hours=-3))
 
 
 def interpretar_user_agent(ua_texto):
@@ -37,7 +39,7 @@ def interpretar_user_agent(ua_texto):
 def registrar_acesso(ip, user_agent_bruto, pagina_visitada="/"):
     """Insere uma nova linha na tabela acessos (INSERT)."""
     dados = interpretar_user_agent(user_agent_bruto)
-    agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    agora = datetime.now(FUSO_BRASILIA).strftime("%Y-%m-%d %H:%M:%S")
 
     conexao = conectar()
     cursor = conexao.cursor()
